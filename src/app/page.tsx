@@ -10,6 +10,11 @@ import { BadgeCheck, Check, Hourglass, Shield } from "lucide-react";
 export default function Home() {
 	return (
 		<div className="bg-background w-screen flex flex-col gap-8 my-8 min-h-screen items-center font-sans px-60">
+			<ul className="flex flex-col gap-4 justify-center">
+				<li className="bg-accent align-middle before:align-middle before:content-['•'] before:mr-4 before:text-xl rounded-md p-2">
+					item smthmth
+				</li>
+			</ul>
 			<div className="w-full">
 				<div className="flex flex-col gap-2 ">
 					<h2 className="pb-4 text-text text-3xl font-bold">

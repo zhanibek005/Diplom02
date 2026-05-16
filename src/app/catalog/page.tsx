@@ -1,92 +1,96 @@
 "use client";
+
+import { useEffect, useState, useCallback } from "react";
 import CarCard from "@/components/CarCard";
-import PerCard from "@/components/PerCard";
 import SampleModal from "@/components/SampleDialog";
 import ThemeButton from "@/components/ThemeButton";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Forum from "@/components/Forum";
+import type { Car, CarFilters } from "@/lib/cars";
 
-export default function Home() {
-  const funcName = () => console.log();
-  return (
-    <div className="bg-background w-screen flex min-h-screen items-center justify-center font-sans">
-      <main className=" flex min-h-screen w-full  flex-col items-center justify-between py-15 px-16 sm:items-start">
-        <div className="w-full flex flex-row justify-between">
-          <div className="flex flex-col gap-2 ">
-            <h2 className="pb-4 text-text text-3xl font-bold">
-              Подбор Автомобиля
-            </h2>
-            <p className="text-gray-500 text-xl pb-4">
-              уточните фильтры и отсортирйуте результаты
-            </p>
-          </div>
-          <Button
-            onMouseDown={() => {
-              console.log("");
-            }}
-            variant="ghost"
-            className="p-4 pl-10 border border-indigo-10 text-accent hover:text-accent-foreground"
-          >
-            <span className="text-xl p-4 pl-10">Оставьте заявку</span>
-          </Button>
-        </div>
+export default function CatalogPage() {
+	const [cars, setCars] = useState<Car[]>([]);
+	const [loading, setLoading] = useState(true);
 
-        <Forum onSubmit={funcName} onCancel={funcName} />
+	// Функция загрузки машин из API с опциональными фильтрами
+	const fetchCars = useCallback(async (filters?: CarFilters) => {
+		setLoading(true);
 
-        <ThemeButton />
-        <div className="rounded-md grid p-2 grid-cols-4 gap-2 justify-between w-full">
-          <CarCard
-            title="title"
-            labels={["label1", "label2", "label3"]}
-            price={3.5}
-            imageUrl="https://i.pinimg.com/originals/d9/25/2d/d9252d7f73fd1ec4cefc02bc4820633d.jpg"
-          />
-          <CarCard
-            title="title"
-            labels={["label1", "label2", "label3"]}
-            price={3.5}
-            imageUrl="https://i.pinimg.com/originals/d9/25/2d/d9252d7f73fd1ec4cefc02bc4820633d.jpg"
-          />
-          <CarCard
-            title="title"
-            labels={["label1", "label2", "label3"]}
-            price={3.5}
-            imageUrl="https://i.pinimg.com/originals/d9/25/2d/d9252d7f73fd1ec4cefc02bc4820633d.jpg"
-          />
-          <CarCard
-            title="title"
-            labels={["label1", "label2", "label3"]}
-            price={3.5}
-            imageUrl="https://i.pinimg.com/originals/d9/25/2d/d9252d7f73fd1ec4cefc02bc4820633d.jpg"
-          />
-          <CarCard
-            title="title"
-            labels={["label1", "label2", "label3"]}
-            price={3.5}
-            imageUrl="https://i.pinimg.com/originals/d9/25/2d/d9252d7f73fd1ec4cefc02bc4820633d.jpg"
-          />
-          <CarCard
-            title="title"
-            labels={["label1", "label2", "label3"]}
-            price={3.5}
-            imageUrl="https://i.pinimg.com/originals/d9/25/2d/d9252d7f73fd1ec4cefc02bc4820633d.jpg"
-          />
-          <CarCard
-            title="title"
-            labels={["label1", "label2", "label3"]}
-            price={3.5}
-            imageUrl="https://i.pinimg.com/originals/d9/25/2d/d9252d7f73fd1ec4cefc02bc4820633d.jpg"
-          />
-          <PerCard
-            name="title"
-            position="positions"
-            skills={["skill1", "skill2", "skill3"]}
-            imageUrl="https://content.kaspersky-labs.com/fm/site-editor/dc/dc17dbf731bc7c7018d13ffe643e480d/processed/case-study-neo-q93-r1920.jpg"
-          />
-        </div>
-        <SampleModal />
-      </main>
-    </div>
-  );
+		// Собираем query string из фильтров
+		const params = new URLSearchParams();
+		if (filters) {
+			for (const [key, value] of Object.entries(filters)) {
+				if (value) params.set(key, value);
+			}
+		}
+
+		const url = `/api/cars${params.size > 0 ? `?${params.toString()}` : ""}`;
+		const response = await fetch(url);
+		const data = await response.json();
+
+		setCars(data);
+		setLoading(false);
+	}, []);
+
+	// Загружаем все машины при первой отрисовке страницы
+	useEffect(() => {
+		fetchCars();
+	}, [fetchCars]);
+
+	return (
+		<div className="bg-background w-screen flex min-h-screen items-center justify-center font-sans">
+			<main className=" flex min-h-screen w-full  flex-col items-center justify-between py-15 px-16 sm:items-start">
+				<div className="w-full flex flex-row justify-between">
+					<div className="flex flex-col gap-2 ">
+						<h2 className="pb-4 text-text text-3xl font-bold">
+							Подбор Автомобиля
+						</h2>
+						<p className="text-gray-500 text-xl pb-4">
+							уточните фильтры и отсортирйуте результаты
+						</p>
+					</div>
+					<Button
+						onMouseDown={() => {
+							console.log("");
+						}}
+						variant="ghost"
+						className="p-4 pl-10 border border-indigo-10 text-accent hover:text-accent-foreground"
+					>
+						<span className="text-xl p-4 pl-10">Оставьте заявку</span>
+					</Button>
+				</div>
+
+				{/* Форма передаёт заполненные фильтры в fetchCars */}
+				<Forum onSubmit={fetchCars} onCancel={() => fetchCars()} />
+
+				<ThemeButton />
+
+				<div className="rounded-md grid p-2 grid-cols-4 gap-2 justify-between w-full">
+					{loading && (
+						<p className="col-span-4 text-center text-gray-500 py-8">
+							Загрузка...
+						</p>
+					)}
+
+					{!loading && cars.length === 0 && (
+						<p className="col-span-4 text-center text-gray-500 py-8">
+							Ничего не найдено
+						</p>
+					)}
+
+					{cars.map((car) => (
+						<CarCard
+							key={car.id}
+							title={car.title}
+							labels={car.labels}
+							price={car.price}
+							imageUrl={car.image_url}
+						/>
+					))}
+				</div>
+
+				<SampleModal />
+			</main>
+		</div>
+	);
 }
