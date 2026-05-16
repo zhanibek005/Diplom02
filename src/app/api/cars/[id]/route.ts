@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 import { carUpdateSchema } from "@/lib/cars";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
 // GET /api/cars/[id] - получить одну машину по id
+// для всех
 export async function GET(_request: NextRequest, { params }: RouteParams) {
 	const { id } = await params;
+	const supabase = await createClient();
 
 	const { data, error } = await supabase
 		.from("cars")
@@ -24,15 +27,15 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 	return NextResponse.json(data);
 }
 
-// PUT /api/cars/[id] - обновить машину (можно передать только те поля, которые меняются)
-//
-// Пример: PUT /api/cars/3
-// Body: { "price": 14000000, "mileage": 50000 }
+// PUT /api/cars/[id] - обновить машину
+// только для админов
 export async function PUT(request: NextRequest, { params }: RouteParams) {
+	const auth = await requireAdmin();
+	if (auth instanceof NextResponse) return auth;
+
 	const { id } = await params;
 	const body = await request.json();
 
-	// carUpdateSchema - все поля опциональные (.partial())
 	const parsed = carUpdateSchema.safeParse(body);
 
 	if (!parsed.success) {
@@ -42,7 +45,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 		);
 	}
 
-	const { data, error } = await supabase
+	const { data, error } = await auth.supabase
 		.from("cars")
 		.update(parsed.data)
 		.eq("id", Number(id))
@@ -57,10 +60,14 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE /api/cars/[id] - удалить машину
+// только для админов
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+	const auth = await requireAdmin();
+	if (auth instanceof NextResponse) return auth;
+
 	const { id } = await params;
 
-	const { error } = await supabase
+	const { error } = await auth.supabase
 		.from("cars")
 		.delete()
 		.eq("id", Number(id));

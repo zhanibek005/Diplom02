@@ -1,4 +1,4 @@
--- тестовые данные
+-- тестовые данные, запускать уже после schema.sql
 
 insert into cars (title, brand, model, year, price, transmission, mileage, labels, image_url) values
   (
@@ -43,3 +43,8 @@ insert into cars (title, brand, model, year, price, transmission, mileage, label
     '{"кроссовер", "бензин", "2.0L"}',
     'https://i.pinimg.com/originals/d9/25/2d/d9252d7f73fd1ec4cefc02bc4820633d.jpg'
   );
+
+-- Чтобы сделать пользователя админом после регистрации:
+-- 1. Зарегайся через POST /api/auth/signup
+-- 2. Найди свой user_id в Authentication -> Users
+-- 3. update user_roles set role = 'admin' where user_id = '<user_id>';

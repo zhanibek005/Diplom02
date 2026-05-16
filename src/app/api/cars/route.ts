@@ -1,20 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 import { carSchema } from "@/lib/cars";
 
-// GET /api/cars - получить список машин (с опциональной фильтрацией)
+// GET /api/cars - получить список машин
+// работает для всех
 //
 // Пример: GET /api/cars?brand=Toyota&yearFrom=2020&priceTo=20000000
-//
-// Все query-параметры опциональные. Если не передать ничего - вернутся все машины.
 export async function GET(request: NextRequest) {
 	const searchParams = request.nextUrl.searchParams;
+	const supabase = await createClient();
 
-	// Строим запрос к Supabase
-	// select("*") - выбрать все колонки
 	let query = supabase.from("cars").select("*");
 
-	// Каждый переданный фильтр добавляется к запросу
 	const brand = searchParams.get("brand");
 	if (brand) query = query.ilike("brand", `%${brand}%`);
 
@@ -36,7 +34,6 @@ export async function GET(request: NextRequest) {
 	const transmission = searchParams.get("transmission");
 	if (transmission) query = query.eq("transmission", transmission);
 
-	// Сортируем по дате создания, новые вперёд
 	query = query.order("created_at", { ascending: false });
 
 	const { data, error } = await query;
@@ -49,6 +46,7 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/cars - создать новую машину
+// работает только для админов
 //
 // Пример тела запроса:
 // {
@@ -63,9 +61,12 @@ export async function GET(request: NextRequest) {
 //   "image_url": "https://example.com/photo.jpg"
 // }
 export async function POST(request: NextRequest) {
+	// requireAdmin() внутри создаёт серверный клиент и проверяет роль
+	const auth = await requireAdmin();
+	if (auth instanceof NextResponse) return auth;
+
 	const body = await request.json();
 
-	// Валидация; если прислали хуйню - кидай 400
 	const parsed = carSchema.safeParse(body);
 
 	if (!parsed.success) {
@@ -75,9 +76,11 @@ export async function POST(request: NextRequest) {
 		);
 	}
 
-	// insert не возвращает созданные значения, нужно чейнить с селектом, single
-	// ограничивает селект до одного ряда
-	const { data, error } = await supabase
+	// auth.supabase - такой же клиент, как и supabase.createClient(); но хранит в
+	// себе сессию текущешл пользователя
+	// RLS на таблице cars разрешает insert только для админов
+	// Без авторизации или нужной роли на пользователе кинет ошибку
+	const { data, error } = await auth.supabase
 		.from("cars")
 		.insert(parsed.data)
 		.select()
@@ -87,6 +90,5 @@ export async function POST(request: NextRequest) {
 		return NextResponse.json({ error: error.message }, { status: 500 });
 	}
 
-	// 201 - статус обозначающий создание ресурса
 	return NextResponse.json(data, { status: 201 });
 }
