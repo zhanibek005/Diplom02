@@ -15,9 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+import type { CarFilters } from "@/lib/cars";
+
 // Функции тоже можно прокидывать, как обычные переменные
 interface SampleFormProps {
-  onSubmit: () => void;
+  onSubmit: (filters: CarFilters) => void;
   onCancel: () => void;
 }
 
@@ -46,21 +48,19 @@ export default function SampleForm({ onSubmit, onCancel }: SampleFormProps) {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const newErrors: typeof errors = {};
-    if (!mark.trim()) newErrors.mark = "Напишите марку";
-    if (!model.trim()) newErrors.model = "Укажите модель";
-    if (!yearFrom.trim()) newErrors.yearFrom = "Укажите год от";
-    if (!yearTo.trim()) newErrors.yearTo = "Укажите год до";
-    if (!transmission.trim()) newErrors.transmission = "Укажите КПП";
-    if (!mileage.trim()) newErrors.mileage = "Введите пробег";
-    if (!priceFrom.trim()) newErrors.priceFrom = "Введите цену от";
-    if (!priceTo.trim()) newErrors.priceTo = "Введите цену до";
-    if (!company.trim()) newErrors.company = "Введите название компании";
 
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length === 0) {
-      onSubmit();
-    }
+    // Собираем фильтры — все опциональные, отправляем только заполненные
+    const filters: CarFilters = {};
+    if (mark.trim()) filters.brand = mark.trim();
+    if (model.trim()) filters.model = model.trim();
+    if (yearFrom.trim()) filters.yearFrom = yearFrom.trim();
+    if (yearTo.trim()) filters.yearTo = yearTo.trim();
+    if (transmission.trim()) filters.transmission = transmission.trim();
+    if (mileage.trim()) filters.mileage = mileage.trim();
+    if (priceFrom.trim()) filters.priceFrom = priceFrom.trim();
+    if (priceTo.trim()) filters.priceTo = priceTo.trim();
+
+    onSubmit(filters);
   }
 
   return (
