@@ -5,7 +5,22 @@ import SampleModal from "@/components/SampleDialog";
 import ThemeButton from "@/components/ThemeButton";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, Check, Hourglass, Shield } from "lucide-react";
+import Zayavka from "@/components/Zayavka";
+import {
+	BadgeCheck,
+	Building,
+	Check,
+	CircleDollarSign,
+	FileSpreadsheet,
+	Handshake,
+	Hourglass,
+	KeySquare,
+	MessageCircle,
+	Phone,
+	ScanSearch,
+	Shield,
+	TicketCheck,
+} from "lucide-react";
 
 export default function Home() {
 	return (
@@ -74,13 +89,134 @@ export default function Home() {
 					</div>
 					<div className="shadow-md w-110 h-56 border border-2-indigo-400 rounded-xl  ">
 						<div className="bg-primary/20 rounded-md size-10 flex align-middle justify-center p-2 m-3">
-							<BadgeCheck className="text-blue-600" />
+							<CircleDollarSign className="text-blue-600" />
 						</div>
+						<div className="flex flex-col gap-2 text-sm font-semibold p-2">
+							Без переплат
+						</div>
+						<p className=" text-xl p-2">
+							Торг с продавцом , оценка ликвидности
+						</p>
 					</div>
 					<div className="shadow-md w-110 h-56 border border-2-indigo-400 rounded-xl  ">
 						<div className="bg-primary/20 rounded-md size-10 flex align-middle justify-center p-2 m-3">
-							<BadgeCheck className="text-blue-600" />
+							<KeySquare className="text-blue-600" />
 						</div>
+						<div className="flex flex-col gap-2 text-sm font-semibold p-2">
+							Под ключ
+						</div>
+						<p className=" text-xl p-2">От заявки до постановки на учет</p>
+					</div>
+				</div>
+			</div>
+			<div className="bg-primary/5 -mx-60 px-60 py-2 flex flex-col w-screen">
+				<h1 className="text-black text-2xl pb-4 font-bold mt-8">
+					Как мы работаем
+				</h1>
+				<div className="rounded-md gap-8 w-full flex flex-row">
+					<div className="bg-background shadow-md w-110 h-56 border border-2-indigo-400 rounded-xl  ">
+						<div className="bg-primary/20 rounded-md size-10 flex align-middle justify-center p-2 m-3">
+							<FileSpreadsheet className="text-blue-600" />
+						</div>
+						<div className="flex flex-col gap-2 text-sm font-semibold p-2">
+							Прозрачность
+						</div>
+						<p className=" text-xl p-2">
+							Фото и видео отчет, проверки по базам, Диагностика СТО
+						</p>
+					</div>
+					<div className="bg-background shadow-md w-110 h-56 border border-2-indigo-400 rounded-xl  ">
+						<div className="bg-primary/20 rounded-md size-10 flex align-middle justify-center p-2 m-3">
+							<ScanSearch className="text-blue-600" />
+						</div>
+						<div className="flex flex-col gap-2 text-sm font-semibold p-2">
+							Без переплат
+						</div>
+						<p className=" text-xl p-2">
+							Торг с продавцом , оценка ликвидности
+						</p>
+					</div>
+					<div className="bg-background shadow-md w-110 h-56 border border-2-indigo-400 rounded-xl  ">
+						<div className="bg-primary/20 rounded-md size-10 flex align-middle justify-center p-2 m-3">
+							<Handshake className="text-blue-600" />
+						</div>
+						<div className="flex flex-col gap-2 text-sm font-semibold p-2">
+							Под ключ
+						</div>
+						<p className=" text-xl p-2">От заявки до постановки на учет</p>
+					</div>
+					<div className=" bg-background shadow-md w-110 h-56 border border-2-indigo-400 rounded-xl  ">
+						<div className="bg-primary/20 rounded-md size-10 flex align-middle justify-center p-2 m-3">
+							<TicketCheck className="text-blue-600" />
+						</div>
+						<div className="flex flex-col gap-2 text-sm font-semibold p-2">
+							Под ключ
+						</div>
+						<p className=" text-xl p-2">От заявки до постановки на учет</p>
+					</div>
+				</div>
+				<Button className=" w-40 self-center mt-6 h-14">
+					<span className="text-lg p-1 pl-2">Оставьте заявку</span>
+				</Button>
+			</div>
+			<div className="rounded-md p-2 flex flex-col gap-2 justify-between w-full">
+				<h1 className="text-black text-2xl pb-4 font-bold mt-8">
+					Как мы работаем
+				</h1>
+				<div className="flex flex-row w-full justify-between p-2 gap-2">
+					<CarCard
+						className=" max-w-96"
+						title="title"
+						labels={["label1", "label2", "label3"]}
+						price={3.5}
+						imageUrl="https://i.pinimg.com/originals/d9/25/2d/d9252d7f73fd1ec4cefc02bc4820633d.jpg"
+					/>
+					<CarCard
+						className=" max-w-96"
+						title="title"
+						labels={["label1", "label2", "label3"]}
+						price={3.5}
+						imageUrl="https://i.pinimg.com/originals/d9/25/2d/d9252d7f73fd1ec4cefc02bc4820633d.jpg"
+					/>
+					<CarCard
+						className=" max-w-96"
+						title="title"
+						labels={["label1", "label2", "label3"]}
+						price={3.5}
+						imageUrl="https://i.pinimg.com/originals/d9/25/2d/d9252d7f73fd1ec4cefc02bc4820633d.jpg"
+					/>
+				</div>
+			</div>
+			<Zayavka onSubmit={console.log} onCancel={console.log} />
+			<div className=" flex flex-row gap-16 w-full">
+				<div className=" flex flex-col gap-2">
+					<p className="text-2xl">О компании</p>
+					<h1 className="max-w-96">
+						Команда автоэкспертов: диагности, оценщики и переговорщики. Работаем
+						по Казахстану, помогаем с проверкой авто из РФ/ОАЭ.
+					</h1>
+					<ul className="list-disc ml-4">
+						<li>Coffee</li>
+						<li>Tea</li>
+						<li>Milk</li>
+					</ul>
+					<Button variant="outline" className=" w-36">
+						Подробнее о нас
+					</Button>
+				</div>
+				<div className=" flex flex-col">
+					<p className="text-2xl">Контакты</p>
+					<div className="flex flex-row ">
+						<Phone className="text-blue-600" />
+						<h1> + 7 777 777 77 77 </h1>
+					</div>
+					<div className="flex flex-row">
+						<MessageCircle className="text-blue-600" />
+						<h1> MAX </h1>
+					</div>
+					<div className="flex flex-row">
+						<Building className="text-blue-600" />
+						<h1> Зольная улица, 15 </h1>
 					</div>
 				</div>
 			</div>
