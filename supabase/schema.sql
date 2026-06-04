@@ -37,8 +37,8 @@ $$ language sql security definer;
 create or replace function handle_new_user()
 returns trigger as $$
 begin
-	insert into user_roles (user_id, role) values (new.id, 'customer');
-	insert into user_profiles (user_id) values (new.id);
+	insert into public.user_roles (user_id, role) values (new.id, 'customer');
+	insert into public.user_profiles (user_id) values (new.id);
 	return new;
 end;
 $$ language plpgsql security definer;
@@ -165,4 +165,45 @@ create policy "Profiles: создание своей" on user_profiles
 	for insert with check (auth.uid() = user_id);
 
 create policy "Profiles: обновление своей или админ" on user_profiles
-	for update using (auth.uid() = user_id or get_user_role() = 'admin');
+	for update using (auth.uid() = user_id or get_user_role() = 'admin')
+	with check (auth.uid() = user_id or get_user_role() = 'admin');
+
+create policy "Public read avatars" on storage.objects
+  for select using (bucket_id = 'avatars');
+create policy "Public read cars" on storage.objects
+  for select using (bucket_id = 'cars');
+
+create policy "Avatars upload own" on storage.objects
+	for insert with check (
+		bucket_id = 'avatars'
+		and auth.role() = 'authenticated'
+		and (storage.foldername(name))[1] = auth.uid()::text
+	);
+create policy "Avatars update own" on storage.objects
+	for update using (
+		bucket_id = 'avatars'
+		and auth.role() = 'authenticated'
+		and (storage.foldername(name))[1] = auth.uid()::text
+	);
+create policy "Avatars delete own" on storage.objects
+	for delete using (
+		bucket_id = 'avatars'
+		and auth.role() = 'authenticated'
+		and (storage.foldername(name))[1] = auth.uid()::text
+	);
+
+create policy "Cars upload admin" on storage.objects
+	for insert with check (
+		bucket_id = 'cars'
+		and get_user_role() = 'admin'
+	);
+create policy "Cars update admin" on storage.objects
+	for update using (
+		bucket_id = 'cars'
+		and get_user_role() = 'admin'
+	);
+create policy "Cars delete admin" on storage.objects
+	for delete using (
+		bucket_id = 'cars'
+		and get_user_role() = 'admin'
+	);

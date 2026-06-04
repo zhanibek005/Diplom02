@@ -17,14 +17,13 @@ import { Badge } from "./ui/badge";
 // Без неё есть риск конфликтов стилей, мозги себе потом заебёшь пока поправишь
 import { cn } from "@/lib/utils";
 
-// Это свойства, которые принимает компонент
 interface CarCardProps {
 	className?: string;
 	title: string;
 	price: number;
 	labels: string[];
-	// Знак вопроса значит, что свойство опциональное, и его можно не прокидывать
 	imageUrl?: string;
+	onDetail?: () => void;
 }
 
 // Твоя задача здесь - найти обрыгански отрисованное изображение, и найти
@@ -110,7 +109,7 @@ export default function CarCard(props: CarCardProps) {
 				<p className="text-xl font-bold">
 					{props.price.toLocaleString("ru-KZ")} ₸
 				</p>
-				<Button variant="outline">Подробнее</Button>
+				<Button variant="outline" onClick={props.onDetail}>Подробнее</Button>
 			</div>
 		</div>
 	);

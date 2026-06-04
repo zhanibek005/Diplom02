@@ -1,10 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
 	Field,
-	FieldDescription,
 	FieldError,
 	FieldGroup,
 	FieldLabel,
@@ -15,15 +14,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-interface RegisterFormProps {
+interface LoginFormProps {
 	onSubmit: () => void;
 	onCancel: () => void;
 }
 
-export default function RegisterForm({
-	onSubmit,
-	onCancel,
-}: RegisterFormProps) {
+export default function LoginForm({ onSubmit, onCancel }: LoginFormProps) {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [errors, setErrors] = useState<{ email?: string; password?: string }>(
@@ -35,86 +31,70 @@ export default function RegisterForm({
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 		const newErrors: typeof errors = {};
-
 		if (!email.includes("@")) newErrors.email = "Email введи нормально";
-		if (password.length < 6)
-			newErrors.password = "Пароль должен быть от 6 символов";
-
+		if (!password) newErrors.password = "Введи пароль";
 		setErrors(newErrors);
+		if (Object.keys(newErrors).length > 0) return;
 
-		if (Object.keys(newErrors).length === 0) {
-			setLoading(true);
-			try {
-				const res = await fetch("/api/auth/signup", {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ email, password }),
-				});
+		setLoading(true);
+		try {
+			const res = await fetch("/api/auth/login", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ email, password }),
+			});
 
+			if (res.ok) {
+				onSubmit();
+				router.refresh();
+			} else {
 				const data = await res.json();
-
-				if (res.ok) {
-					onSubmit(); // Успешно: вызываем закрытие и уведомление
-					router.push("/profile");
-				} else {
-					alert(data.error || "Ошибка регистрации");
-				}
-			} catch (err) {
-				alert("Ошибка соединения с сервером");
-			} finally {
-				setLoading(false);
+				alert(data.error || "Ошибка входа");
 			}
+		} catch {
+			alert("Ошибка соединения");
+		} finally {
+			setLoading(false);
 		}
 	}
 
 	return (
 		<form onSubmit={handleSubmit}>
 			<FieldSet>
-				<FieldLegend>Регистрация</FieldLegend>
-				<FieldDescription>Создайте аккаунт в системе</FieldDescription>
+				<FieldLegend>Вход</FieldLegend>
 				<FieldGroup>
 					<Field>
-						<FieldLabel htmlFor="reg-email">Email</FieldLabel>
+						<FieldLabel htmlFor="login-email">Email</FieldLabel>
 						<Input
-							id="reg-email"
+							id="login-email"
 							type="email"
-							autoComplete="off"
+							autoComplete="email"
 							placeholder="mail@example.com"
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
-							aria-invalid={!!errors.email}
 							disabled={loading}
 						/>
 						{errors.email && <FieldError>{errors.email}</FieldError>}
 					</Field>
-
 					<Field>
-						<FieldLabel htmlFor="reg-password">Пароль</FieldLabel>
+						<FieldLabel htmlFor="login-password">Пароль</FieldLabel>
 						<Input
-							id="reg-password"
+							id="login-password"
 							type="password"
-							autoComplete="off"
+							autoComplete="current-password"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
-							aria-invalid={!!errors.password}
 							disabled={loading}
 						/>
 						{errors.password && <FieldError>{errors.password}</FieldError>}
 					</Field>
 				</FieldGroup>
-
 				<FieldSeparator />
-
 				<div className="flex gap-2 mt-4">
 					<Button type="submit" disabled={loading}>
-						{loading ? "Создание..." : "Зарегистрироваться"}
+						{loading ? "Вход..." : "Войти"}
 					</Button>
-					<Button
-						type="button"
-						variant="destructive"
-						onClick={onCancel}
-						disabled={loading}
-					>
+					<Button type="button" variant="destructive" onClick={onCancel}>
 						Отмена
 					</Button>
 				</div>

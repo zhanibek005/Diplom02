@@ -3,48 +3,73 @@ import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
 import { carSchema } from "@/lib/cars";
 
-// GET /api/cars - получить список машин
-// работает для всех
-//
-// Пример: GET /api/cars?brand=Toyota&yearFrom=2020&priceTo=20000000
 export async function GET(request: NextRequest) {
 	const searchParams = request.nextUrl.searchParams;
-	console.log("SUPABASE URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
-console.log("SUPABASE KEY:", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 	const supabase = await createClient();
 
-	let query = supabase.from("cars").select("*");
+	const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
+	const per_page = Math.min(100, Math.max(1, parseInt(searchParams.get("per_page") ?? "50", 10)));
+
+	let countQuery = supabase.from("cars").select("*", { count: "exact", head: true });
+	let dataQuery = supabase.from("cars").select("*");
 
 	const brand = searchParams.get("brand");
-	if (brand) query = query.ilike("brand", `%${brand}%`);
+	if (brand) {
+		countQuery = countQuery.ilike("brand", `%${brand}%`);
+		dataQuery = dataQuery.ilike("brand", `%${brand}%`);
+	}
 
 	const model = searchParams.get("model");
-	if (model) query = query.ilike("model", `%${model}%`);
+	if (model) {
+		countQuery = countQuery.ilike("model", `%${model}%`);
+		dataQuery = dataQuery.ilike("model", `%${model}%`);
+	}
 
 	const yearFrom = searchParams.get("yearFrom");
-	if (yearFrom) query = query.gte("year", Number(yearFrom));
+	if (yearFrom) {
+		countQuery = countQuery.gte("year", Number(yearFrom));
+		dataQuery = dataQuery.gte("year", Number(yearFrom));
+	}
 
 	const yearTo = searchParams.get("yearTo");
-	if (yearTo) query = query.lte("year", Number(yearTo));
+	if (yearTo) {
+		countQuery = countQuery.lte("year", Number(yearTo));
+		dataQuery = dataQuery.lte("year", Number(yearTo));
+	}
 
 	const priceFrom = searchParams.get("priceFrom");
-	if (priceFrom) query = query.gte("price", Number(priceFrom));
+	if (priceFrom) {
+		countQuery = countQuery.gte("price", Number(priceFrom));
+		dataQuery = dataQuery.gte("price", Number(priceFrom));
+	}
 
 	const priceTo = searchParams.get("priceTo");
-	if (priceTo) query = query.lte("price", Number(priceTo));
+	if (priceTo) {
+		countQuery = countQuery.lte("price", Number(priceTo));
+		dataQuery = dataQuery.lte("price", Number(priceTo));
+	}
 
 	const transmission = searchParams.get("transmission");
-	if (transmission) query = query.eq("transmission", transmission);
+	if (transmission) {
+		countQuery = countQuery.eq("transmission", transmission);
+		dataQuery = dataQuery.eq("transmission", transmission);
+	}
 
-	query = query.order("created_at", { ascending: false });
+	const from = (page - 1) * per_page;
+	dataQuery = dataQuery.order("created_at", { ascending: false }).range(from, from + per_page - 1);
 
-	const { data, error } = await query;
+	const [{ count }, { data, error }] = await Promise.all([countQuery, dataQuery]);
 
 	if (error) {
 		return NextResponse.json({ error: error.message }, { status: 500 });
 	}
 
-	return NextResponse.json(data);
+	return NextResponse.json({
+		data: data ?? [],
+		total: count ?? 0,
+		page,
+		per_page,
+	});
 }
 
 // POST /api/cars - создать новую машину

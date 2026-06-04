@@ -67,15 +67,4 @@ export async function getUserDetails() {
 	}
 }
 
-export async function getUsersList() {
-	const supabase = await createClient()
-	try {
-		const response = await supabase
-			.from('auth.users')
-			.select('*')
-		return response.data
-	} catch (error) {
-		console.error('Error:', error)
-		return null
-	}
-}
+
