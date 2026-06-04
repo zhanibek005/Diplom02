@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
 	Card,
 	CardContent,
@@ -8,19 +9,33 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ProfileSettingsTab() {
 	const { user, refresh } = useAuth();
+	const router = useRouter();
 	const [fullName, setFullName] = useState(user?.full_name ?? "");
 	const [phone, setPhone] = useState(user?.phone ?? "");
 	const [saving, setSaving] = useState(false);
 	const [uploading, setUploading] = useState(false);
+	const [deleting, setDeleting] = useState(false);
 	const avatarUploadRef = useRef<HTMLInputElement>(null);
 
 	async function handleSave() {
@@ -56,6 +71,20 @@ export default function ProfileSettingsTab() {
 			toast.error("Ошибка загрузки");
 		}
 		setUploading(false);
+	}
+
+	async function handleDelete() {
+		setDeleting(true);
+		const res = await fetch("/api/profile", { method: "DELETE" });
+		if (res.ok) {
+			const supabase = createClient();
+			await supabase.auth.signOut();
+			router.push("/");
+		} else {
+			const data = await res.json();
+			toast.error(data.error || "Ошибка удаления");
+			setDeleting(false);
+		}
 	}
 
 	const displayName = user?.full_name ?? user?.email ?? "U";
@@ -125,9 +154,35 @@ export default function ProfileSettingsTab() {
 					/>
 				</div>
 
-				<Button onClick={handleSave} disabled={saving}>
-					{saving ? "Сохранение..." : "Сохранить"}
-				</Button>
+				<div className="flex gap-2">
+					<Button onClick={handleSave} disabled={saving}>
+						{saving ? "Сохранение..." : "Сохранить"}
+					</Button>
+
+					<AlertDialog>
+						<AlertDialogTrigger asChild>
+							<Button variant="destructive">Удалить профиль</Button>
+						</AlertDialogTrigger>
+						<AlertDialogContent>
+							<AlertDialogHeader>
+								<AlertDialogTitle>Удалить профиль?</AlertDialogTitle>
+								<AlertDialogDescription>
+									Все ваши данные будут безвозвратно удалены. Это действие нельзя отменить.
+								</AlertDialogDescription>
+							</AlertDialogHeader>
+							<AlertDialogFooter>
+								<AlertDialogCancel>Отмена</AlertDialogCancel>
+								<AlertDialogAction
+									onClick={handleDelete}
+									disabled={deleting}
+									className="bg-destructive hover:bg-destructive/90"
+								>
+									{deleting ? "Удаление..." : "Удалить"}
+								</AlertDialogAction>
+							</AlertDialogFooter>
+						</AlertDialogContent>
+					</AlertDialog>
+				</div>
 			</CardContent>
 		</Card>
 	);

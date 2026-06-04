@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 import { requireAuth } from "@/lib/auth";
 import { updateProfileSchema } from "@/lib/profile";
 
@@ -53,4 +54,22 @@ export async function PUT(request: NextRequest) {
 	}
 
 	return NextResponse.json(data);
+}
+
+export async function DELETE() {
+	const auth = await requireAuth();
+	if (auth instanceof NextResponse) return auth;
+
+	const admin = createClient(
+		process.env.NEXT_PUBLIC_SUPABASE_URL!,
+		process.env.SUPABASE_SERVICE_ROLE_KEY!,
+		{ auth: { autoRefreshToken: false, persistSession: false } },
+	);
+
+	const { error } = await admin.auth.admin.deleteUser(auth.userId);
+	if (error) {
+		return NextResponse.json({ error: error.message }, { status: 500 });
+	}
+
+	return NextResponse.json({ success: true });
 }
