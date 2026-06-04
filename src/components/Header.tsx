@@ -4,15 +4,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import SampleForm from "./FormExample"; // путь поправь под себя
+import SampleForm from "./FormExample";
+import RegisterForm from "./RegisterForm"; // Импортируем созданную форму
 
 export default function Header() {
   const [openForm, setOpenForm] = useState(false);
-
-  const onPress = () => {
-    toast.success("темная тема");
-    document.documentElement.classList.toggle("dark");
-  };
+  const [openAuth, setOpenAuth] = useState(false); // Стейт для регистрации
 
   return (
     <>
@@ -25,32 +22,28 @@ export default function Header() {
               Главная
             </Button>
           </Link>
-
           <Link href="/catalog">
             <Button variant="ghost" className="text-accent">
               Подбор Авто
             </Button>
           </Link>
-
           <Link href="/services">
             <Button variant="ghost" className="text-accent">
               Услуги
             </Button>
           </Link>
-
           <Link href="/company">
             <Button variant="ghost" className="text-accent">
               О компании
             </Button>
           </Link>
-
           <Link href="/contacts">
             <Button variant="ghost" className="text-accent">
               Контакты
             </Button>
           </Link>
 
-          {/* КНОПКА ОТКРЫТИЯ ФОРМЫ */}
+          {/* КНОПКА ОТКРЫТИЯ ФОРМЫ ЗАЯВКИ */}
           <Button
             variant="outline"
             className="text-accent"
@@ -58,10 +51,19 @@ export default function Header() {
           >
             Оставить заявку
           </Button>
+
+          {/* КНОПКА ОТКРЫТИЯ РЕГИСТРАЦИИ */}
+          <Button
+            variant="outline"
+            className="text-accent"
+            onClick={() => setOpenAuth(true)}
+          >
+            Регистрация
+          </Button>
         </div>
       </div>
 
-      {/* ФОРМА */}
+      {/* ФОРМА ЗАЯВКИ */}
       {openForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-background p-6 rounded-lg w-[400px]">
@@ -71,6 +73,21 @@ export default function Header() {
                 setOpenForm(false);
               }}
               onCancel={() => setOpenForm(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ФОРМА РЕГИСТРАЦИИ (ВСПЛЫВАЕТ ТОЧНО ТАК ЖЕ) */}
+      {openAuth && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-background p-6 rounded-lg w-[400px]">
+            <RegisterForm
+              onSubmit={() => {
+                toast.success("Регистрация успешна!");
+                setOpenAuth(false);
+              }}
+              onCancel={() => setOpenAuth(false)}
             />
           </div>
         </div>

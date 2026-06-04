@@ -9,6 +9,8 @@ import { carSchema } from "@/lib/cars";
 // Пример: GET /api/cars?brand=Toyota&yearFrom=2020&priceTo=20000000
 export async function GET(request: NextRequest) {
 	const searchParams = request.nextUrl.searchParams;
+	console.log("SUPABASE URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
+console.log("SUPABASE KEY:", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 	const supabase = await createClient();
 
 	let query = supabase.from("cars").select("*");
