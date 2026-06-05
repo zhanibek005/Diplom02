@@ -23,7 +23,7 @@ export function CarsTab() {
 	const fetchCars = useCallback(async () => {
 		const res = await fetch("/api/cars");
 		const data = await res.json();
-		setCars(Array.isArray(data) ? data : []);
+		setCars(Array.isArray(data.data) ? data.data : []);
 	}, []);
 
 	useEffect(() => {
