@@ -54,7 +54,22 @@ export async function GET(request: NextRequest) {
 		countQuery = countQuery.eq("transmission", transmission);
 		dataQuery = dataQuery.eq("transmission", transmission);
 	}
-
+   const displacement = searchParams.get("displacement");
+    if (displacement) {
+        const dispNum = parseFloat(displacement.replace(",", "."));
+        if (!isNaN(dispNum)) {
+            countQuery = countQuery.eq("displacement", dispNum);
+            dataQuery = dataQuery.eq("displacement", dispNum);
+        }
+    }
+	const mileage = searchParams.get("mileage");
+    if (mileage) {
+        const mileageNum = parseInt(mileage, 10);
+        if (!isNaN(mileageNum)) {
+            countQuery = countQuery.lte("mileage", mileageNum);
+            dataQuery = dataQuery.lte("mileage", mileageNum);
+        }
+    }
 	const from = (page - 1) * per_page;
 	dataQuery = dataQuery.order("created_at", { ascending: false }).range(from, from + per_page - 1);
 
