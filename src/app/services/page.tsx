@@ -94,68 +94,68 @@ export default function Home() {
       </div>
       <div className="bg-primary/5 -mx-60 px-60 py-2 flex flex-col w-screen">
         <h1 className="text-black text-2xl pb-4 font-bold mt-8">Тарифы</h1>
-        <div className="rounded-md gap-8 w-full flex flex-row">
-          <div className=" bg-background shadow-md w-full h-full border border-2-indigo-400 rounded-xl p-4 py-10 flex flex-col gap-6">
-            <div className="flex flex-col mb-4 gap-2 text-lg font-semibold">
+
+        <div className="rounded-md gap-8 w-full flex flex-row items-stretch">
+          {/* Тариф: Обычный */}
+          <div className="bg-background shadow-md w-full border-2 border-indigo-200 rounded-xl p-4 py-10 flex flex-col gap-6 cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-2xl hover:border-indigo-500">
+            <div className="flex flex-col mb-4 gap-2 text-lg font-semibold text-black">
               Обычный
             </div>
             <p className="text-gray-500 font-bold text-base p-1">
               Быстрый отбор и базовые проверки
             </p>
-            <div className="font-bold text-2xl p-1">
+            <div className="font-bold text-2xl p-1 text-black">
               <p>от 149 000 ₸</p>
             </div>
-            <ul className="text-gray-500 text-lg  font-semibold list-disc ml-4">
+            <ul className="text-gray-500 text-lg font-semibold list-disc ml-4">
               <li>Срез рынка до 5 вариантов</li>
               <li>Проверка по базам</li>
               <li>Онлайн консультация</li>
             </ul>
-            <Button className="w-full h-10 mb-4" variant="outline">
-              выбрать
-            </Button>
           </div>
-          <div className=" bg-background shadow-md w-full h-full border border-2-indigo-400 rounded-xl p-4 py-10 flex flex-col gap-6">
-            <div className="flex flex-col mb-4 gap-2 text-lg font-semibold">
+
+          {/* Тариф: Про */}
+          <div className="bg-background shadow-md w-full border-2 border-indigo-200 rounded-xl p-4 py-10 flex flex-col gap-6 cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-2xl hover:border-indigo-500">
+            <div className="flex flex-col mb-4 gap-2 text-lg font-semibold text-black">
               Про
             </div>
             <p className="text-gray-500 font-bold text-base p-1">
               Оптимально для большинства
             </p>
-            <div className="font-bold text-2xl  p-1">
+            <div className="font-bold text-2xl p-1 text-black">
               <p>от 249 000 ₸</p>
             </div>
-            <ul className="text-gray-500  font-semibold list-disc ml-4">
-              <li>срез рынка до 10 вариантов</li>
-              <li>выездная диагностика</li>
+            <ul className="text-gray-500 text-lg font-semibold list-disc ml-4">
+              <li>Срез рынка до 10 вариантов</li>
+              <li>Выездная диагностика</li>
               <li>Торг и сопровождение сделки</li>
               <li>Поддержка 30+ дней</li>
             </ul>
-            <Button className="w-full" variant="outline">
-              выбрать
-            </Button>
           </div>
-          <div className=" bg-background shadow-md w-full h-full border border-2-indigo-400 rounded-xl p-4 py-10 flex flex-col gap-6">
-            <div className="flex flex-col mb-4 gap-2 text-lg font-semibold">
+
+          {/* Тариф: Премиум */}
+          <div className="bg-background shadow-md w-full border-2 border-indigo-200 rounded-xl p-4 py-10 flex flex-col gap-6 cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-2xl hover:border-indigo-500">
+            <div className="flex flex-col mb-4 gap-2 text-lg font-semibold text-black">
               Премиум
             </div>
             <p className="text-gray-500 font-bold text-base p-1">
-              Максимальрная забота и сервис
+              Максимальная забота и сервис
             </p>
-            <div className="font-bold text-2xl p-1">
+            <div className="font-bold text-2xl p-1 text-black">
               <p>от 349 000 ₸</p>
             </div>
-            <ul className="text-gray-500  font-semibold list-disc ml-4">
-              <li>Персональный эексперт</li>
+            <ul className="text-gray-500 text-lg font-semibold list-disc ml-4">
+              <li>Персональный эксперт</li>
               <li>2+ выезда в день</li>
               <li>Организация СТО</li>
               <li>Сопровождение до постановки на учет</li>
             </ul>
-            <Button className="w-full" variant="outline">
-              выбрать
-            </Button>
           </div>
         </div>
-        <p>*итоговая стоимость зависит от города. Точные условия в заявки</p>
+
+        <p className="text-gray-400 text-sm mt-4">
+          *итоговая стоимость зависит от города. Точные условия в заявке
+        </p>
       </div>
       <div
         id="how-we-work"
